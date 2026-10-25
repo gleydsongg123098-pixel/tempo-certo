@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tempo Certo — Jogo de Cronômetro</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#131b31;--panel2:#192440;--text:#f4f7ff;--muted:#aab5d0;--accent:#7c5cff;--cyan:#43d9ff;--green:#4be0a0;--red:#ff6b86}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Arial,sans-serif;background:radial-gradient(ellipse at top,#1a2550 0%,var(--bg) 55%);color:var(--text);min-height:100vh}
+.wrap{max-width:1050px;margin:auto;padding:28px 18px 48px}.brand{display:flex;align-items:center;gap:12px;margin-bottom:26px}.logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--cyan));display:grid;place-items:center;font-size:24px;box-shadow:0 8px 30px #7c5cff44}.brand h1{font-size:22px;margin:0}.brand p{margin:3px 0 0;color:var(--muted);font-size:13px}
+.hero{text-align:center;margin:22px auto 28px}.eyebrow{color:var(--cyan);font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase}.hero h2{font-size:clamp(27px,5vw,42px);margin:10px 0}.hero p{color:var(--muted);max-width:620px;margin:auto;line-height:1.6}
+.modes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:26px 0 18px}.mode{background:#111a30;border:1px solid #293657;border-radius:15px;padding:14px 12px;color:var(--text);text-align:left;cursor:pointer;transition:.18s}.mode:hover{transform:translateY(-2px);border-color:#6f63d9}.mode.active{background:linear-gradient(135deg,#29275b,#172a48);border-color:var(--accent);box-shadow:0 0 0 1px #7c5cff33}.mode .emoji{font-size:22px;display:block;margin-bottom:8px}.mode strong{display:block;font-size:14px}.mode small{display:block;color:var(--muted);font-size:11px;line-height:1.4;margin-top:5px}
+.game{background:linear-gradient(145deg,#151f38ee,#10172bee);border:1px solid #2a3859;border-radius:24px;padding:clamp(18px,4vw,34px);box-shadow:0 22px 70px #0004}.gamehead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.tag{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;background:#242c4c;color:#c5caff;border:1px solid #39456b;padding:7px 10px;border-radius:999px}.status{font-size:13px;color:var(--muted)}.clock{font-variant-numeric:tabular-nums;text-align:center;font-size:clamp(52px,11vw,94px);font-weight:750;letter-spacing:-3px;margin:28px 0 5px}.clock.hidden{color:transparent;text-shadow:0 0 24px #b8c4ff44;user-select:none}.clock.hidden::selection{background:transparent}.hint{text-align:center;color:var(--muted);font-size:14px;min-height:22px}.targetrow{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:22px 0 8px}.target{min-width:94px;text-align:center;background:#0d1428;border:1px solid #2b3859;border-radius:13px;padding:10px 13px}.target span{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px}.target b{font-size:20px;font-variant-numeric:tabular-nums}.target.current{border-color:var(--cyan);box-shadow:0 0 0 1px #43d9ff33}.target.done{border-color:#2e9d7c;background:#102a2b}.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:24px 0 8px}.btn{border:0;border-radius:13px;padding:14px 23px;font-size:15px;font-weight:800;cursor:pointer;transition:.15s}.btn:active{transform:scale(.98)}.primary{background:linear-gradient(135deg,var(--accent),#5b8bff);color:white;min-width:180px;box-shadow:0 9px 25px #665cff3d}.secondary{background:#202b47;color:#e6ebff;border:1px solid #354363}.danger{background:#3a1e36;color:#ffb6c3;border:1px solid #71364c}.result{display:none;margin-top:22px;padding:18px;border-radius:16px;background:#0d1728;border:1px solid #2d3a5c}.result.show{display:block}.result h3{margin:0 0 8px;font-size:18px}.scoreline{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.score{font-size:38px;font-weight:850;color:var(--green)}.result p{margin:6px 0;color:var(--muted);line-height:1.5}.results-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}.result-item{padding:10px;background:#17223a;border-radius:10px;font-size:13px}.result-item b{display:block;margin-top:4px;font-variant-numeric:tabular-nums}.online{margin:20px 0;background:#10182d;border:1px solid #303d60;border-radius:20px;padding:18px}.online h3{margin:0 0 8px}.online p{color:var(--muted);font-size:13px}.online-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.field{width:100%;padding:12px;border-radius:10px;border:1px solid #3a486b;background:#0b1224;color:var(--text);font:inherit}.online-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.online-msg{font-size:13px;color:var(--cyan);min-height:18px;margin-top:10px}.online-room{display:none;margin-top:14px;padding:14px;background:#0b1326;border:1px solid #2b3859;border-radius:14px}.online-room.show{display:block}.player-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:12px 0}.player{background:#17223a;padding:10px;border-radius:10px;font-size:13px;display:flex;justify-content:space-between;gap:8px}.player small{color:var(--muted)}.mode-select{padding:10px;border-radius:10px;background:#0b1224;color:var(--text);border:1px solid #3a486b}.online-target{font-size:18px;color:var(--cyan);font-weight:800;text-align:center;margin:10px}.footer{text-align:center;color:#7886a7;font-size:12px;margin-top:18px}.rules{color:var(--muted);font-size:12px;text-align:center;margin-top:13px}
+@media(max-width:760px){.online-grid{grid-template-columns:1fr}.player-list{grid-template-columns:1fr}.modes{grid-template-columns:repeat(2,minmax(0,1fr))}.clock{letter-spacing:-2px}.wrap{padding-top:18px}.results-list{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="brand"><div class="logo">⏱</div><div><h1>Tempo Certo</h1><p>Treine sua precisão. Vença o relógio.</p></div></header>
+  <section class="hero"><div class="eyebrow">Desafio de precisão</div><h2>Você consegue acertar o tempo?</h2><p>Escolha um modo, inicie o cronômetro e teste seu reflexo — ou sua noção de tempo.</p></section>
+  <section class="online">
+    <h3>🌐 Jogar online com amigos</h3>
+    <p>Crie uma sala hospedada no navegador do líder, compartilhe o código e joguem juntos. Até 8 jogadores. Não exige servidor Node próprio; usa conexão P2P via WebRTC e um serviço gratuito de sinalização.</p>
+    <div class="online-grid">
+      <input class="field" id="playerName" maxlength="18" placeholder="Seu nome" value="Jogador">
+      <input class="field" id="roomCode" maxlength="6" placeholder="Código da sala" autocomplete="off">
+      <div class="online-actions" style="margin-top:0"><button class="btn primary" id="createRoom">Criar sala</button><button class="btn secondary" id="joinRoom">Entrar</button></div>
+    </div>
+    <div class="online-msg" id="onlineMsg">Hospedagem P2P: o líder precisa manter esta aba aberta durante a partida.</div>
+    <div class="online-room" id="onlineRoom">
+      <div class="gamehead"><span class="tag">Sala <span id="roomCodeLabel"></span></span><span class="status" id="onlineStatus">Aguardando jogadores</span></div>
+      <div class="online-grid" style="margin-top:12px"><div><label for="onlineMode" style="font-size:12px;color:var(--muted)">Modo da partida</label><select class="mode-select" id="onlineMode" style="display:block;width:100%;margin-top:5px"><option value="normal">Cronômetro normal</option><option value="triple">3 tempos</option><option value="competitive">Competitivo</option><option value="invisible">Invisível</option><option value="invisibleCompetitive">Invisível competitivo</option></select></div><div><label style="font-size:12px;color:var(--muted)">Alvo da rodada</label><div class="online-target" id="onlineTarget">—</div></div><div><label style="font-size:12px;color:var(--muted)">Cronômetro da sala</label><div class="online-target" id="onlineClock">00:00.00</div></div></div>
+      <div class="player-list" id="playerList"></div>
+      <div class="online-actions"><button class="btn primary" id="onlineStart">▶ Iniciar partida</button><button class="btn secondary" id="onlineRecord" disabled>● Registrar tempo</button><button class="btn secondary" id="onlineAgain" style="display:none">↻ Nova partida</button><button class="btn danger" id="leaveRoom">Sair da sala</button></div>
+      <div class="online-msg" id="onlineResult"></div>
+    </div>
+  </section>
+  <nav class="modes" aria-label="Modos de jogo">
+    <button class="mode active" data-mode="normal"><span class="emoji">⏱️</span><strong>Cronômetro normal</strong><small>Inicie, pause e zere o tempo.</small></button>
+    <button class="mode" data-mode="triple"><span class="emoji">🎯</span><strong>3 tempos</strong><small>Acerte três alvos aleatórios em sequência.</small></button>
+    <button class="mode" data-mode="competitive"><span class="emoji">🏆</span><strong>Competitivo</strong><small>Uma chance para acertar o alvo.</small></button>
+    <button class="mode" data-mode="invisible"><span class="emoji">🫥</span><strong>Invisível</strong><small>O relógio fica escondido enquanto você mede o tempo.</small></button>
+  </nav>
+  <main class="game">
+    <div class="gamehead"><span class="tag" id="modeTag">Modo normal</span><span class="status" id="status">Pronto para começar</span></div>
+    <div class="clock" id="clock" aria-live="off">00:00.00</div>
+    <div class="hint" id="hint">Pressione iniciar para começar a contar.</div>
+    <div class="targetrow" id="targetrow"></div>
+    <div class="actions">
+      <button class="btn primary" id="mainBtn">▶ Iniciar</button>
+      <button class="btn secondary" id="resetBtn">↺ Reiniciar</button>
+      <button class="btn secondary" id="visibilityBtn" style="display:none">Mostrar relógio</button>
+    </div>
+    <section class="result" id="result" aria-live="polite"></section>
+    <div class="rules" id="rules">O cronômetro normal não tem limite de tempo.</div>
+  </main>
+  <div class="footer">TEMPO CERTO • Jogue no seu ritmo</div>
+</div>
+<script>
+(() => {
+ const $=id=>document.getElementById(id);
+ const clock=$('clock'), mainBtn=$('mainBtn'), resetBtn=$('resetBtn'), hint=$('hint'), status=$('status'), tag=$('modeTag'), targetsEl=$('targetrow'), result=$('result'), visibilityBtn=$('visibilityBtn'), rules=$('rules');
+ const names={normal:'Modo normal',triple:'Desafio de 3 tempos',competitive:'Modo competitivo',invisible:'Modo invisível',invisibleCompetitive:'Invisível competitivo'};
+ let mode='normal', running=false, startedAt=0, elapsed=0, raf=0, targetTimes=[], hits=[], round=0, visible=false, startStamp=0;
+ const fmt=ms=>{let cs=Math.floor(ms/10),s=Math.floor(cs/100),m=Math.floor(s/60);return String(m).padStart(2,'0')+':'+String(s%60).padStart(2,'0')+'.'+String(cs%100).padStart(2,'0')};
+ const seconds=ms=>(ms/1000).toFixed(2)+'s';
+ function nowElapsed(){return running?elapsed+(performance.now()-startedAt):elapsed}
+ function draw(){if(mode==='invisible'||mode==='invisibleCompetitive'){clock.textContent=visible?fmt(nowElapsed()):'00:00.00';clock.classList.toggle('hidden',!visible)}else{clock.textContent=fmt(nowElapsed());clock.classList.remove('hidden')}}
+ function tick(){draw();if(running)raf=requestAnimationFrame(tick)}
+ function stopClock(){if(running){elapsed+=performance.now()-startedAt;running=false;cancelAnimationFrame(raf)}draw()}
+ function startClock(){if(!running){startedAt=performance.now();running=true;status.textContent='Cronômetro em andamento';mainBtn.textContent=mode==='normal'?'⏸ Pausar':'● Registrar tempo';raf=requestAnimationFrame(tick)}}
+ function randomTargets(n){let arr=[];for(let i=0;i<n;i++)arr.push(+(2+Math.random()*8).toFixed(2));return arr.sort((a,b)=>a-b)}
+ function renderTargets(){targetsEl.innerHTML='';if(!['triple','competitive','invisible','invisibleCompetitive'].includes(mode))return;
+   if(mode==='invisible'||mode==='invisibleCompetitive'){targetsEl.innerHTML='<div class="target"><span>Tempo-alvo</span><b>'+targetTimes[0].toFixed(2)+'s</b></div>';return}
+   targetTimes.forEach((t,i)=>{let d=document.createElement('div');d.className='target'+(i<round?' done':i===round?' current':'');d.innerHTML='<span>Alvo '+(i+1)+'</span><b>'+t.toFixed(2)+'s</b>';targetsEl.appendChild(d)})
+ }
+ function setup(m){stopClock();mode=m;elapsed=0;running=false;round=0;hits=[];visible=false;targetTimes=randomTargets(m==='triple'?3:1);result.classList.remove('show');result.innerHTML='';tag.textContent=names[m];status.textContent='Pronto para começar';mainBtn.textContent='▶ Iniciar';clock.classList.remove('hidden');visibilityBtn.style.display=(m==='invisible'||m==='invisibleCompetitive')?'inline-block':'none';visibilityBtn.textContent='Mostrar relógio';
+   if(m==='normal'){hint.textContent='Pressione iniciar para começar a contar.';rules.textContent='O cronômetro normal não tem limite de tempo.'}
+   else if(m==='triple'){hint.textContent='Tente parar em cada alvo; o cronômetro continua após cada registro.';rules.textContent='Os alvos aparecem em ordem crescente e ficam entre 2 e 10 segundos.'}
+   else if(m==='competitive'){hint.textContent='Uma única tentativa: registre quando achar que chegou ao alvo.';rules.textContent='Uma chance. Quanto menor a diferença para o alvo, maior sua precisão.'}
+   else if(m==='invisible'){hint.textContent='O tempo-alvo fica visível; apenas o cronômetro real fica escondido.';rules.textContent='Use o tempo-alvo como referência e tente parar no momento certo.'}
+   else {hint.textContent='Uma tentativa: o tempo-alvo fica visível, mas o cronômetro real fica escondido.';rules.textContent='Modo competitivo invisível: uma chance para acertar o alvo visível.'}
+   renderTargets();draw();
+ }
+ function accuracy(target,actual){return Math.max(0,100-Math.abs(actual-target)/target*100)}
+ function showResult(items){let avg=items.reduce((a,x)=>a+x.acc,0)/items.length;let grade=avg>=95?'Precisão incrível!':avg>=80?'Muito bom!':avg>=60?'Bom trabalho!':'Continue treinando!';
+   result.innerHTML='<h3>Desafio concluído</h3><div class="scoreline"><div class="score">'+avg.toFixed(1)+'%</div><strong>'+grade+'</strong></div><p>Precisão média calculada pela diferença entre o tempo-alvo e o seu tempo.</p><div class="results-list">'+items.map((x,i)=>'<div class="result-item">Tentativa '+(i+1)+'<b>Alvo: '+seconds(x.target*1000)+'</b><b>Seu tempo: '+seconds(x.actual)+'</b><b>Precisão: '+x.acc.toFixed(1)+'%</b>').join('')+'</div>';
+   result.classList.add('show');mainBtn.textContent='↻ Jogar novamente';status.textContent='Desafio finalizado';hint.textContent='Veja sua pontuação abaixo.'
+ }
+ function register(){stopClock();let actual=elapsed, target=targetTimes[round]*1000;hits.push({target:targetTimes[round],actual,acc:accuracy(target,actual)});round++;
+   if(mode==='triple'&&round<3){renderTargets();status.textContent='Tempo '+round+' de 3 registrado';hint.textContent='Próximo alvo! O cronômetro continua.';startClock();mainBtn.textContent='● Registrar tempo';return}
+   showResult(hits);renderTargets()
+ }
+ mainBtn.addEventListener('click',()=>{
+   if(mode==='normal'){if(running){stopClock();status.textContent='Pausado';mainBtn.textContent='▶ Continuar'}else{startClock()}return}
+   if(result.classList.contains('show')){setup(mode);return}
+   if(!running){if(round===0&&elapsed===0){startClock();hint.textContent=(mode==='invisible'||mode==='invisibleCompetitive')?'Conte mentalmente; pressione registrar quando achar que chegou ao tempo.':'Pressione registrar quando achar que chegou ao alvo.';mainBtn.textContent='● Registrar tempo'}else startClock()}
+   else register();
+ });
+ resetBtn.addEventListener('click',()=>setup(mode));
+ visibilityBtn.addEventListener('click',()=>{visible=!visible;visibilityBtn.textContent=visible?'Esconder relógio':'Mostrar relógio';draw()});
+ document.querySelectorAll('.mode').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.mode').forEach(x=>x.classList.toggle('active',x===b));setup(b.dataset.mode)}));
+ setup('normal');
+})();
+</script>
+
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+(()=>{
+ const $=id=>document.getElementById(id);
+ const MODES=['normal','triple','competitive','invisible','invisibleCompetitive'];
+ const modeNames={normal:'Cronômetro normal',triple:'3 tempos',competitive:'Competitivo',invisible:'Invisível',invisibleCompetitive:'Invisível competitivo'};
+ let peer=null, hostConn=null, connections=new Map(), room=null, playerId=null, isHost=false;
+ let onlineRunning=false, onlineStartAt=0, onlineElapsed=0, onlineRAF=0, onlineRound=0, onlineDone=false, targetTimes=[], localResults=[];
+ const msg=t=>$('onlineMsg').textContent=t;
+ const myName=()=>String($('playerName').value||'Jogador').trim().slice(0,18)||'Jogador';
+ const makeCode=()=>Array.from({length:6},()=> 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
+ function sendHost(type,payload={}){if(isHost){handleHostMessage(playerId,type,payload)}else if(hostConn&&hostConn.open){hostConn.send({type,payload})}else msg('Você não está conectado a uma sala.');}
+ function sendTo(conn,type,payload){try{conn.send({type,payload})}catch(e){}}
+ function broadcast(type,payload){for(const c of connections.values())if(c.open)sendTo(c,type,payload);}
+ function roomSnapshot(){return {code:room.code,leaderId:room.leaderId,mode:room.mode,phase:room.phase,round:onlineRound,targets:targetTimes,players:[...room.players.values()].map(p=>({...p,results:p.results.map(x=>({...x}))}))};}
+ function renderRoom(r){room=r;$('onlineRoom').classList.add('show');$('roomCodeLabel').textContent=r.code;$('roomCode').value=r.code;const leader=isHost;
+   $('onlineStatus').textContent=(r.phase==='lobby'?'Lobby':r.phase==='playing'?'Partida em andamento':'Resultados')+' • '+r.players.length+'/8 jogadores';
+   $('onlineMode').value=r.mode;$('onlineMode').disabled=!leader||r.phase!=='lobby';$('onlineStart').style.display=leader&&r.phase==='lobby'?'inline-block':'none';$('onlineAgain').style.display=leader&&r.phase==='results'?'inline-block':'none';$('onlineRecord').disabled=r.phase!=='playing'||onlineDone||!onlineRunning;
+   const list=$('playerList');list.innerHTML='';const sorted=[...r.players].sort((a,b)=>r.phase==='results'?b.score-a.score:a.name.localeCompare(b.name));
+   for(let i=0;i<sorted.length;i++){const p=sorted[i],d=document.createElement('div');d.className='player';let score=r.phase==='lobby'?'Pronto':!p.finished?'Jogando':r.mode==='normal'?(p.score.toFixed(2)+' s'):(p.score.toFixed(1)+'%');d.innerHTML='<span>'+(r.phase==='results'?'#'+(i+1)+' ':'')+esc(p.name)+(p.id===r.leaderId?' 👑':'')+'<br><small>'+(p.finished?'Finalizou':p.results.length?'Tempos: '+p.results.length:'Na sala')+'</small></span><b>'+score+'</b>';list.appendChild(d);}
+   if(r.phase==='lobby'){$('onlineTarget').textContent='Aguardando início';$('onlineResult').textContent=leader?'Você é o líder/host. Mantenha esta aba aberta.':'Aguardando o líder iniciar.'}
+   if(r.phase==='playing')showTarget();
+   if(r.phase==='results'){$('onlineTarget').textContent='Fim de jogo';const me=r.players.find(p=>p.id===playerId);$('onlineResult').textContent=me?.finished?(r.mode==='normal'?'Seu tempo: '+me.score.toFixed(2)+' s':'Sua pontuação: '+me.score.toFixed(1)+'% de precisão'):'Partida finalizada.';}
+ }
+ function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+ function broadcastRoom(){const snap=roomSnapshot();renderRoom(snap);broadcast('room',snap);}
+ function sendClient(type,payload){if(isHost)handleHostMessage(playerId,type,payload);else if(hostConn?.open)sendTo(hostConn,type,payload);}
+ function hostSendOne(id,type,payload){if(id===playerId){handleClientMessage(type,payload);return;}const c=connections.get(id);if(c)sendTo(c,type,payload);}
+ function handleHostMessage(from,type,payload){
+   if(!isHost||!room)return;
+   if(type==='join'){
+     if(room.phase!=='lobby')return hostSendOne(from,'error',{message:'A partida já começou.'});
+     if(room.players.size>=8)return hostSendOne(from,'error',{message:'Sala cheia (máximo de 8 jogadores).'});
+     if(room.players.has(from))return;
+     room.players.set(from,{id:from,name:String(payload.name||'Jogador').slice(0,18),score:0,finished:false,results:[]});
+     hostSendOne(from,'welcome',{playerId:from,room:roomSnapshot()});broadcastRoom();return;
+   }
+   const p=room.players.get(from);if(!p)return;
+   if(type==='mode'&&from===room.leaderId&&room.phase==='lobby'&&MODES.includes(payload.mode)){room.mode=payload.mode;broadcastRoom();return;}
+   if(type==='start'&&from===room.leaderId&&room.phase==='lobby'){
+     room.phase='playing';onlineRound=0;targetTimes=room.mode==='triple'?Array.from({length:3},()=>+(2+Math.random()*8).toFixed(2)).sort((a,b)=>a-b):(room.mode==='normal'?[]:[+(2+Math.random()*8).toFixed(2)]);
+     for(const x of room.players.values()){x.score=0;x.finished=false;x.results=[];}
+     localResults=[];onlineElapsed=0;onlineRound=0;onlineDone=false;room.startedAt=Date.now();
+     const data={mode:room.mode,targets:targetTimes,startedAt:room.startedAt};handleClientMessage('started',data);broadcast('started',data);broadcastRoom();return;
+   }
+   if(type==='submit'&&room.phase==='playing'&&!p.finished){
+     const actual=Math.max(0,Math.min(600000,Number(payload.actualMs)||0));
+     if(room.mode==='normal'){p.results=[{target:null,actual,accuracy:0}];p.score=actual/1000;p.finished=true;}
+     else {const idx=p.results.length;if(idx>=targetTimes.length||payload.roundIndex!==idx)return hostSendOne(from,'error',{message:'Tentativa inválida.'});const target=targetTimes[idx],acc=Math.max(0,100-Math.abs(actual/1000-target)/target*100);p.results.push({target,actual,accuracy:acc});p.score=p.results.reduce((a,x)=>a+x.accuracy,0)/p.results.length;if(p.results.length>=targetTimes.length)p.finished=true;}
+     broadcastRoom();if([...room.players.values()].every(x=>x.finished)){room.phase='results';onlineDone=true;handleClientMessage('results',roomSnapshot());broadcast('results',roomSnapshot());broadcastRoom();}else hostSendOne(from,'submitted',{finished:p.finished,results:p.results});return;
+   }
+   if(type==='again'&&from===room.leaderId&&room.phase==='results'){room.phase='lobby';room.targets=[];targetTimes=[];onlineRound=0;for(const x of room.players.values()){x.score=0;x.finished=false;x.results=[];}onlineDone=false;handleClientMessage('again',{});broadcast('again',{});broadcastRoom();return;}
+ }
+ function handleClientMessage(type,payload){
+   if(type==='room'){renderRoom(payload);return;}
+   if(type==='welcome'){playerId=payload.playerId;room=payload.room;renderRoom(room);msg('Conectado à sala '+room.code+'.');return;}
+   if(type==='error'){msg(payload.message||'Ocorreu um erro.');return;}
+   if(type==='started'){room.phase='playing';room.mode=payload.mode;targetTimes=payload.targets||[];onlineElapsed=0;onlineStartAt=performance.now();onlineRunning=true;onlineDone=false;onlineRound=0;localResults=[];$('onlineRecord').disabled=false;$('onlineAgain').style.display='none';$('onlineResult').textContent='Partida iniciada!';showTarget();onlineTick();return;}
+   if(type==='submitted'){if(room.mode==='triple'&&payload.results.length<3){$('onlineResult').textContent='Tempo '+payload.results.length+' registrado. O cronômetro continua!';}else{$('onlineResult').textContent='Tempo registrado. Aguardando os outros jogadores…';}return;}
+   if(type==='results'){onlineRunning=false;onlineDone=true;cancelAnimationFrame(onlineRAF);renderRoom(payload);$('onlineRecord').disabled=true;$('onlineAgain').style.display=isHost?'inline-block':'none';$('onlineResult').textContent='Partida finalizada! Confira o ranking.';return;}
+   if(type==='again'){onlineRunning=false;onlineDone=false;onlineElapsed=0;onlineRound=0;localResults=[];$('onlineClock').style.color='var(--cyan)';$('onlineClock').textContent='00:00.00';$('onlineResult').textContent='Nova partida pronta.';return;}
+ }
+ function showTarget(){const m=room?.mode;if(m==='normal')$('onlineTarget').textContent='Sem alvo';else $('onlineTarget').textContent=targetTimes.map((t,i)=>(m==='triple'?'Alvo '+(i+1)+': ':'')+t.toFixed(2)+' s').join(' • ');$('onlineClock').style.color=(m==='invisible'||m==='invisibleCompetitive')?'transparent':'var(--cyan)';}
+ function elapsedNow(){return onlineElapsed+(onlineRunning?performance.now()-onlineStartAt:0);}
+ function onlineTick(){const ms=elapsedNow(),cs=Math.floor(ms/10),sec=Math.floor(cs/100),min=Math.floor(sec/60);$('onlineClock').textContent=String(min).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')+'.'+String(cs%100).padStart(2,'0');if(onlineRunning)onlineRAF=requestAnimationFrame(onlineTick);}
+ function createPeer(id){return new Promise((resolve,reject)=>{peer=new Peer(id);peer.on('open',()=>resolve());peer.on('error',e=>reject(e));peer.on('connection',conn=>{
+   conn.on('open',()=>{});conn.on('data',data=>{if(!data||!data.type)return; if(data.type==='join'){const fakeId=conn.peer;connections.set(fakeId,conn);handleHostMessage(fakeId,'join',data.payload||{});}else handleHostMessage(conn.peer,data.type,data.payload||{});});
+   conn.on('close',()=>{connections.delete(conn.peer);if(room?.players.has(conn.peer)){room.players.delete(conn.peer);broadcastRoom();}});
+  });});}
+ function connectGuest(code){return new Promise((resolve,reject)=>{peer=new Peer();peer.on('open',()=>{hostConn=peer.connect(code,{reliable:true});hostConn.on('open',()=>{hostConn.send({type:'join',payload:{name:myName()}});resolve();});hostConn.on('data',d=>{if(d?.type)handleClientMessage(d.type,d.payload||{});});hostConn.on('error',reject);hostConn.on('close',()=>msg('A conexão com o host foi encerrada.'));});peer.on('error',reject);});}
+ $('createRoom').addEventListener('click',async()=>{if(typeof Peer==='undefined'){msg('Não carregou o módulo de conexão. Verifique sua internet.');return;}msg('Criando sala P2P…');isHost=true;playerId=makeCode()+makeCode().slice(0,2);const code=playerId.slice(0,6);playerId=code;try{await createPeer(code);room={code,leaderId:playerId,mode:'triple',phase:'lobby',players:new Map([[playerId,{id:playerId,name:myName(),score:0,finished:false,results:[]}]]),startedAt:null};msg('Sala criada! Compartilhe o código '+code+'. Mantenha esta aba aberta.');broadcastRoom();}catch(e){isHost=false;msg('Não foi possível criar a sala. Tente novamente; o código pode já estar em uso.');try{peer?.destroy();}catch(_){}peer=null;}});
+ $('joinRoom').addEventListener('click',async()=>{const code=$('roomCode').value.trim().toUpperCase();if(code.length!==6){msg('Digite um código de sala de 6 caracteres.');return;}if(typeof Peer==='undefined'){msg('Não carregou o módulo de conexão. Verifique sua internet.');return;}msg('Conectando diretamente ao host…');isHost=false;try{await connectGuest(code);msg('Conexão estabelecida; aguardando confirmação do host…');}catch(e){msg('Não conectou. Confira o código e se o líder está com o jogo aberto.');try{peer?.destroy();}catch(_){}peer=null;}});
+ $('onlineMode').addEventListener('change',()=>{if(room)sendClient('mode',{mode:$('onlineMode').value});});
+ $('onlineStart').addEventListener('click',()=>{if(room)sendClient('start',{});});
+ $('onlineRecord').addEventListener('click',()=>{if(!room||!onlineRunning||onlineDone)return;onlineElapsed=elapsedNow();onlineRunning=false;cancelAnimationFrame(onlineRAF);const actualMs=onlineElapsed;sendClient('submit',{actualMs,roundIndex:onlineRound});onlineRound++;if(room.mode==='triple'&&onlineRound<3){onlineStartAt=performance.now();onlineRunning=true;$('onlineRecord').disabled=false;onlineTick();}else{$('onlineRecord').disabled=true;$('onlineResult').textContent='Tempo registrado. Aguardando os outros jogadores…';}});
+ $('onlineAgain').addEventListener('click',()=>{if(room)sendClient('again',{});});
+ $('leaveRoom').addEventListener('click',()=>{if(isHost){for(const c of connections.values())try{c.close()}catch(_){}try{peer?.destroy()}catch(_){}}else{try{hostConn?.close();peer?.destroy()}catch(_){}}peer=null;hostConn=null;connections=new Map();room=null;playerId=null;isHost=false;onlineRunning=false;onlineDone=false;cancelAnimationFrame(onlineRAF);$('onlineRoom').classList.remove('show');msg('Você saiu da sala.');});
+})();
+</script>
+<script>
+(()=>{
+ const $=id=>document.getElementById(id); let socket=null, room=null, playerId=null, onlineRunning=false, onlineStartAt=0, onlineElapsed=0, onlineRAF=0, onlineRound=0, onlineDone=false;
+ const modeNames={normal:'Cronômetro normal',triple:'3 tempos',competitive:'Competitivo',invisible:'Invisível',invisibleCompetitive:'Invisível competitivo'};
+ const msg=(t)=>$('onlineMsg').textContent=t;
+ function connect(){if(socket?.connected)return true; if(typeof io==='undefined'){msg('Não foi possível carregar a conexão online. Verifique sua internet.');return false;} const url=prompt('Cole o endereço do servidor online (ex.: https://seu-site.onrender.com):'); if(!url){msg('Para jogar online, primeiro publique o servidor e informe o endereço dele.');return false;} try{socket=io(url.trim().replace(/\/$/,''),{transports:['websocket','polling']});}catch(e){msg('Endereço do servidor inválido.');return false;} socket.on('connect',()=>msg('Conectado ao servidor.')); socket.on('connect_error',()=>msg('Não conectou. Confira se o servidor está publicado e tente novamente.')); socket.on('room:update',updateRoom); socket.on('game:started',startOnlineGame); socket.on('game:results',r=>{onlineDone=true;onlineRunning=false;cancelAnimationFrame(onlineRAF);$('onlineAgain').style.display=playerId===r.leaderId?'inline-block':'none';$('onlineRecord').disabled=true;$('onlineResult').textContent='Partida finalizada! Confira o ranking dos jogadores.';updateRoom(r);}); return true; }
+ function call(event,data){return new Promise(resolve=>{if(!socket)return resolve({ok:false,error:'Conecte ao servidor primeiro.'});socket.emit(event,data,resolve);});}
+ function showRoom(r){room=r;$('onlineRoom').classList.add('show');$('roomCodeLabel').textContent=r.code;$('roomCode').value=r.code;}
+ function updateRoom(r){if(!r)return;showRoom(r);const leader=r.leaderId===playerId; $('onlineStatus').textContent=r.phase==='lobby'?'Lobby • '+r.players.length+'/8 jogadores':r.phase==='playing'?'Partida em andamento':'Resultados';$('onlineMode').value=r.mode;$('onlineMode').disabled=!leader||r.phase!=='lobby';$('onlineStart').style.display=leader&&r.phase==='lobby'?'inline-block':'none';$('onlineAgain').style.display=leader&&r.phase==='results'?'inline-block':'none';$('onlineRecord').disabled=r.phase!=='playing'||onlineDone||!onlineRunning;
+ const list=$('playerList');list.innerHTML='';const sorted=[...r.players].sort((a,b)=>{if(r.phase==='results')return b.score-a.score;return a.name.localeCompare(b.name)});sorted.forEach((p,i)=>{const d=document.createElement('div');d.className='player';let score=r.mode==='normal'?(p.finished?((p.score||0).toFixed(2)+' s'):'Jogando'):(p.finished?(p.score.toFixed(1)+'%'):(p.results.length?'Em andamento':'Pronto'));d.innerHTML='<span>'+(r.phase==='results'?'#'+(i+1)+' ':'')+escapeHtml(p.name)+(p.id===r.leaderId?' 👑':'')+'<br><small>'+(p.finished?'Finalizou':p.results?.length?'Tentativas: '+p.results.length:'Na sala')+'</small></span><b>'+score+'</b>';list.appendChild(d)});
+ if(r.phase==='lobby'){$('onlineTarget').textContent='Aguardando início';$('onlineResult').textContent=leader?'Você é o líder. Escolha o modo e inicie.':'Aguardando o líder iniciar.'}
+ if(r.phase==='results'){$('onlineTarget').textContent='Fim de jogo';const me=r.players.find(p=>p.id===playerId);$('onlineResult').textContent=me?.finished?'Sua pontuação: '+(r.mode==='normal'?(me.score.toFixed(2)+' segundos'):(me.score.toFixed(1)+'% de precisão')):'Partida finalizada.'}
+ }
+ function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+ function elapsedNow(){return onlineElapsed+(onlineRunning?performance.now()-onlineStartAt:0)}
+ function onlineTick(){const ms=elapsedNow(),cs=Math.floor(ms/10),sec=Math.floor(cs/100),min=Math.floor(sec/60);$('onlineClock').textContent=String(min).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')+'.'+String(cs%100).padStart(2,'0');if(onlineRunning)onlineRAF=requestAnimationFrame(onlineTick)}
+ function startOnlineGame(data){onlineRunning=true;onlineDone=false;onlineElapsed=0;onlineStartAt=performance.now();onlineRound=0;$('onlineRecord').disabled=false;$('onlineAgain').style.display='none';$('onlineResult').textContent='Partida iniciada!';if(data.mode==='normal')$('onlineTarget').textContent='Sem alvo';else $('onlineTarget').textContent=data.targets.map((t,i)=>(data.mode==='triple'?'Alvo '+(i+1)+': ':'')+t.toFixed(2)+' s').join(' • ');if(data.mode==='invisible'||data.mode==='invisibleCompetitive')$('onlineClock').style.color='transparent';else $('onlineClock').style.color='var(--cyan)';onlineTick();}
+ $('createRoom').addEventListener('click',async()=>{if(!connect())return; if(!socket.connected){msg('Conectando… aguarde um instante e tente novamente.');return;}const r=await call('room:create',{name:$('playerName').value});if(!r.ok){msg(r.error);return;}playerId=r.playerId;room=r.room;updateRoom(room);msg('Sala criada! Compartilhe o código '+room.code+' com seus amigos.');});
+ $('joinRoom').addEventListener('click',async()=>{if(!connect())return;if(!socket.connected){msg('Conectando… aguarde um instante e tente novamente.');return;}const r=await call('room:join',{code:$('roomCode').value,name:$('playerName').value});if(!r.ok){msg(r.error);return;}playerId=r.playerId;updateRoom(r.room);msg('Você entrou na sala '+r.room.code+'.');});
+ $('onlineMode').addEventListener('change',async()=>{if(!room)return;const r=await call('room:mode',{code:room.code,mode:$('onlineMode').value});if(!r.ok){msg(r.error);$('onlineMode').value=room.mode;}});
+ $('onlineStart').addEventListener('click',async()=>{if(!room)return;const r=await call('game:start',{code:room.code});if(!r.ok)msg(r.error);});
+ $('onlineRecord').addEventListener('click',async()=>{if(!room||!onlineRunning||onlineDone)return;onlineElapsed=elapsedNow();onlineRunning=false;cancelAnimationFrame(onlineRAF);const ms=onlineElapsed;const r=await call('game:submit',{code:room.code,actualMs:ms,roundIndex:onlineRound});if(!r.ok){msg(r.error);return;}onlineRound++;if(room.mode==='triple'&&onlineRound<3){onlineStartAt=performance.now();onlineRunning=true;$('onlineRecord').disabled=false;$('onlineResult').textContent='Tempo '+onlineRound+' registrado. O cronômetro continua!';onlineTick();}else{onlineDone=true;$('onlineRecord').disabled=true;$('onlineResult').textContent='Tempo registrado. Aguardando os outros jogadores…';}});
+ $('onlineAgain').addEventListener('click',async()=>{if(!room)return;const r=await call('game:again',{code:room.code});if(!r.ok)msg(r.error);});
+ $('leaveRoom').addEventListener('click',()=>{if(socket)socket.disconnect();socket=null;room=null;playerId=null;onlineRunning=false;onlineDone=false;$('onlineRoom').classList.remove('show');msg('Você saiu da sala. Para entrar novamente, reconecte ao servidor.');});
+ // The target remains visible in both invisible modes; only the running clock is hidden.
+})();
+</script>
+
+</body>
+</html>
